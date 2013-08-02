@@ -4,7 +4,7 @@ import usb.util
 import time
 
 class Thunder(object):
-    duration_time = 500
+    duration_time = 250
     DOWN = 0x01
     UP = 0x02
     LEFT = 0x04
@@ -13,7 +13,7 @@ class Thunder(object):
     STOP = 0x20
 
     def connect(self):
-        print "connect"
+
         self.device = usb.core.find(idVendor=0x2123, idProduct=0x1010)
         if self.device is None:
             raise ValueError('Missile device not found')
@@ -32,19 +32,22 @@ class Thunder(object):
         self.device.ctrl_transfer(0x21, 0x09, 0, 0, [0x03, status_led, 0x00,0x00,0x00,0x00,0x00,0x00])
 
     def send_actions(self, cmd):
+        dur_time = self.duration_time
         if cmd == "left":
             command = self.LEFT
         if cmd == "right":
             command = self.RIGHT
         if cmd == "down":
+            dur_time = 100
             command = self.DOWN
         if cmd == "up":
+            dur_time = 100
             command = self.UP
         if cmd == "fire":
             command = self.FIRE
 
         self._send_command(command)
-        time.sleep(self.duration_time / 1000.0)
+        time.sleep(dur_time / 1000.0)
         self._send_command(self.STOP)
 
     def fire(self):
